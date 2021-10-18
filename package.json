@@ -1,0 +1,28 @@
+{
+  "name": "readable-baseline",
+  "version": "1.0.0",
+  "description": "[Пакет baseline](/docs/baseline.md) - [модуль работы с эссе](/docs/essay.md) `baseline.file`; - [модуль сессий обмена с платформой](/docs/session.md) `baseline.session`; - [модуль разметки эссе](/docs/markup.md) `baseline.markup`; - [вспомогательные инструменты](/docs/tools.md) `baseline.tools`",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "dependencies": {
+    "@upgreat-readable/criteria": "^1.2.1",
+    "@prob/upsr": "https://gitlab+deploy-token-582455:oMmYm2jW9874SPfKzwNw@gitlab.com:webpractik/psr.git#97d18d6ffeff15455ef2c922246ef3398304138a"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/webpractik/readable-baseline.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/webpractik/readable-baseline/issues"
+  },
+  "homepage": "https://gitlab.com/webpractik/readable-baseline#readme"
+}
