@@ -28,7 +28,7 @@ class PsrCalculator:
             file_psr.write(prepared_psr_op)
             file_psr.close()
 
-            bashCmd = ["node", "node_modules/@prob/upsr/build/bin/psrcli.js", '-p',
+            bashCmd = ["node", "node_modules/@upgreat-readable/psr/build/bin/psrcli.js", '-p',
                        path]
             process = subprocess.run(bashCmd, capture_output=True)
             output = process.stdout.decode("utf-8")

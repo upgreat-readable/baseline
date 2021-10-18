@@ -8,8 +8,8 @@
     "test": "tests"
   },
   "dependencies": {
-    "@upgreat-readable/criteria": "^1.2.1",
-    "@prob/upsr": "https://gitlab+deploy-token-582455:oMmYm2jW9874SPfKzwNw@gitlab.com:webpractik/psr.git#97d18d6ffeff15455ef2c922246ef3398304138a"
+    "@upgreat-readable/criteria": "^1.2.2",
+    "@upgreat-readable/psr": "^1.3.0"
   },
   "devDependencies": {},
   "scripts": {
