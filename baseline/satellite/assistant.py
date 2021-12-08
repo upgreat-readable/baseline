@@ -35,7 +35,7 @@ class Assistant(ABC):
         pass
 
     def get_blank_for_essay(self):
-        if self.mode in ['test', 'final']:
+        if self.stage in ['test', 'final']:
             blank_file = FileFactory.create(Path(self.operand_path + self.stage + '_task.json'))
             json_file = json.loads(blank_file.read())
 
@@ -51,7 +51,7 @@ class Assistant(ABC):
         self.blank.answer = answer
 
     def save_answer_for_essay(self):
-        if self.mode in ['test', 'final']:
+        if self.stage in ['test', 'final']:
             blank_file = FileFactory.create(Path(self.operand_path + self.stage + '_task.json'))
             json_file = json.loads(blank_file.read())
             for blank in json_file:

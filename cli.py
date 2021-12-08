@@ -1,3 +1,4 @@
+import random
 import subprocess
 
 import click
@@ -13,6 +14,9 @@ from baseline.session.session import Session
 from baseline.essay import EssayFactory, FileFactory
 from baseline.calculation.criteria.criteria_calculator import CriteriaCalculator
 from baseline.calculation.psr.psr_calculator import PsrCalculator
+from baseline.satellite.assistant import Assistant
+from baseline.satellite.archiver import get_essays_list
+from baseline.satellite.archiver import unzip
 
 
 def min_validate(min_value):
@@ -20,6 +24,7 @@ def min_validate(min_value):
         if value < min_value:
             raise click.BadParameter(f'{param} минимальное значение {min_value}')
         return value
+
     return inner_min_validate
 
 
@@ -146,18 +151,20 @@ def calc():
     help="Режим, в котором запущен ПСР"
 )
 def calc_psr(first_file: str, second_files: Tuple[str], dir: str, mode: bool):
-    first_file_path = 'files/custom/'+first_file
-    second_files_ways = ['files/custom/'+item for item in second_files]
+    first_file_path = 'files/custom/' + first_file
+    second_files_ways = ['files/custom/' + item for item in second_files]
     if dir:
-        first_file_path = 'files/'+dir+'/'+first_file
-        second_files_ways = ['files/'+dir+'/'+item for item in second_files]
+        first_file_path = 'files/' + dir + '/' + first_file
+        second_files_ways = ['files/' + dir + '/' + item for item in second_files]
 
     try:
         with open(first_file_path) as f:
             f.readlines()
     except FileNotFoundError as err:
         click.secho('ERROR', bold=True)
-        return click.secho('Файл, введенный в параметре first_file '+first_file_path+' не найден. Проверьте структуру папок внутри каталога files.', bg='red', fg='white')
+        return click.secho(
+            'Файл, введенный в параметре first_file ' + first_file_path + ' не найден. Проверьте структуру папок внутри каталога files.',
+            bg='red', fg='white')
 
     try:
         for file_way in second_files_ways:
@@ -165,7 +172,9 @@ def calc_psr(first_file: str, second_files: Tuple[str], dir: str, mode: bool):
                 f.readlines()
     except FileNotFoundError as err:
         click.secho('ERROR', bold=True)
-        return click.secho('Файл из параметра second_files '+file_way+' не найден. Проверьте структуру папок внутри каталога files.', bg='red', fg='white')
+        return click.secho(
+            'Файл из параметра second_files ' + file_way + ' не найден. Проверьте структуру папок внутри каталога files.',
+            bg='red', fg='white')
 
     psr_calculator = PsrCalculator()
     psr_calculator.enter_operand_by_path(first_file_path)
@@ -194,16 +203,16 @@ def calc_psr(first_file: str, second_files: Tuple[str], dir: str, mode: bool):
 )
 @click.option(
     '--save', '-s',
-    is_flag=True, 
+    is_flag=True,
     default=False,
-    show_default=True, 
+    show_default=True,
     help=""" 
     Флаг говорит о том, что результат будет сохранен в переданный для расчёта файл (файл будет перезаписан).
     """
 )
 @click.option(
     '--copy', '-c',
-    is_flag=True, 
+    is_flag=True,
     default=False,
     show_default=True,
     help="""
@@ -211,16 +220,17 @@ def calc_psr(first_file: str, second_files: Tuple[str], dir: str, mode: bool):
     """
 )
 def calc_criteria(file_name: str, dir: str = '', save: bool = False, copy: bool = False):
-    prepared_path = 'files/custom/'+file_name
+    prepared_path = 'files/custom/' + file_name
     if dir:
-        prepared_path = 'files/'+dir+'/'+file_name
-    
+        prepared_path = 'files/' + dir + '/' + file_name
+
     try:
         with open(prepared_path) as f:
             f.readlines()
     except FileNotFoundError as err:
         click.secho('ERROR', bold=True)
-        return click.secho('Файл '+file_name+' не найден. Проверьте структуру папок внутри каталога files.', bg='red', fg='white')
+        return click.secho('Файл ' + file_name + ' не найден. Проверьте структуру папок внутри каталога files.',
+                           bg='red', fg='white')
 
     calculator = CriteriaCalculator()
     calculator.enter_operand_by_path(prepared_path)
@@ -233,9 +243,41 @@ def calc_criteria(file_name: str, dir: str = '', save: bool = False, copy: bool 
         calculator.save_result_in_copy_file()
 
 
+@cli.group('satellite', help="Satellites command group")
+def satellite():
+    pass
+
+
+@satellite.command('work-example', help="")
+@click.option(
+    '--mode', '-m',
+    type=click.Choice(['profacti', 'proocenki', 'proznaniya']),
+    required=True,
+    help="Вид саттелита"
+)
+@click.option(
+    '--stage', '-s',
+    type=click.Choice(['test', 'train', 'final']),
+    required=True,
+    help="Этап соревнования"
+)
+def sat(mode, stage):
+    unzip(mode, stage)
+    ar_essay = get_essays_list(mode)
+
+    for essay in ar_essay:
+        assistanit = Assistant()
+        assistanit.get_essay(essay, mode, stage)
+        assistanit.get_blank_for_essay()
+
+        answer = random.randint(0, 5)
+
+        assistanit.set_answer(answer)
+        assistanit.save_answer_for_essay()
+
+
 if __name__ == '__main__':
     cli()
-
 
 # session
 #       start --type --dataset --lang --files_timeout --files_count
