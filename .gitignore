@@ -2,7 +2,11 @@
 .env
 
 # files
-/files/**/*.json
+/files/sessions/*.json
+/files/tests/*.json
+/files/psr_compares/*.json
+/files/custom/*.json
+/files/satellite/**/essays/*.json
 node_modules
 # logs
 *.log

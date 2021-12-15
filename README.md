@@ -5,6 +5,7 @@
 - [модуль сессий обмена с платформой](/docs/session.md) `baseline.session`;
 - [модуль разметки эссе](/docs/markup.md) `baseline.markup`;
 - [вспомогательные инструменты](/docs/tools.md) `baseline.tools`
+- [инструмент для работы с саттелитами](/docs/satellite.md) `baseline.satellite`
 
 [Консольный интерфейс](/docs/cli.md) для управления сессиями обмена и оценивания эссе
 
