@@ -9,7 +9,10 @@ from typing import Any
 from baseline.satellite.archiver import get_essays_list
 
 
-class Blank:
+class Blank(ABC):
+    def __init__(self):
+        pass
+
     id: str
     answer: Any
 
