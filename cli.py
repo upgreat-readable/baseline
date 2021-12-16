@@ -262,18 +262,21 @@ def satellite():
     help="Этап соревнования"
 )
 def sat(mode, stage):
-    unzip(mode, stage)
-    ar_essay = get_essays_list(mode)
+    try:
+        unzip(mode, stage)
+        ar_essay = get_essays_list(mode)
 
-    for essay in ar_essay:
-        assistanit = Assistant()
-        assistanit.get_essay(essay, mode, stage)
-        assistanit.get_blank_for_essay()
+        for essay in ar_essay:
+            assistanit = Assistant()
+            assistanit.get_essay(essay, mode, stage)
+            assistanit.get_blank_for_essay()
 
-        answer = random.randint(0, 5)
+            answer = random.randint(0, 5)
 
-        assistanit.set_answer(answer)
-        assistanit.save_answer_for_essay()
+            assistanit.set_answer(answer)
+            assistanit.save_answer_for_essay()
+    except Exception as e:
+        print(str(e))
 
 
 if __name__ == '__main__':

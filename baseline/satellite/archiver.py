@@ -11,6 +11,7 @@ def get_essays_list(mode: str):
 
 def unzip(mode: str, stage: str):
     oldCwd = os.getcwd()
+    path_string = ''
     if mode in ['profacti', 'proocenki', 'proznaniya']:
         os.chdir("files/satellite/" + mode)
         for file in glob.glob('ds_' + mode + '_' + stage + '_*.zip'):
