@@ -10,16 +10,18 @@ def get_essays_list(mode: str):
 
 
 def unzip(mode: str, stage: str):
-    oldCwd = os.getcwd()
+    possible_modes = ['profacti', 'proocenki', 'proznaniya']
+    old_cwd = os.getcwd()
     path_string = ''
-    if mode in ['profacti', 'proocenki', 'proznaniya']:
+    if mode in possible_modes:
         os.chdir("files/satellite/" + mode)
         for file in glob.glob('ds_' + mode + '_' + stage + '_*.zip'):
             path_string = file
 
-        os.chdir(oldCwd)
+        os.chdir(old_cwd)
         if path_string == '':
-            raise Exception('Архив не найден')
+            raise Exception('Архив не найден. Проверьте содержимое папок profacti, proocenki, proznaniya и уточните '
+                            'этап - test, train, final.')
         print('Работаем с архивом - ' + path_string)
         fantasy_zip = zipfile.ZipFile("files/satellite/" + mode + '/' + path_string)
         fantasy_zip.extractall('files/satellite/' + mode)
