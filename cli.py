@@ -7,7 +7,7 @@ from typing import Tuple
 from pathlib import Path
 from loguru import logger
 
-from baseline.tools.constants import SessionTypeType, SessionLanguageType, SessionDatasetType
+from baseline.tools.constants import SessionContestType, SessionStageType, SessionDatasetType
 from baseline.tools.run import asyncio_run
 from baseline.session.dto import SessionStarterOptions
 from baseline.session.session import Session
@@ -42,28 +42,19 @@ def session():
 
 @session.command('start', help="Use for start a session with params")
 @click.option(
-    '--type', '-t', 'session_type',
-    type=click.Choice(list(SessionTypeType.__args__)),
-    default='algorithmic',
+    '--contest', '-c', 'contest',
+    type=click.Choice(list(SessionContestType.__args__)),
+    default='finder',
     # prompt=True,
     show_default=True,
-    help="Тип сессии, по умолчанию запускается алгоритмическая")
+    help="Тип конкурса, по умолчанию запускается finder")
 @click.option(
-    '--dataset', '-ds', 'dataset',
-    type=click.Choice(list(SessionDatasetType.__args__)),
-    default='train',
-    show_default=True,
-    help="Датасет, файлы из которого будут использованы для сессии (применим только в алгоритмической сессии)")
-@click.option(
-    '--language', '-lang', 'language',
-    type=click.Choice(list(SessionLanguageType.__args__)),
-    default='rus',
+    '--stage', '-stage', 'stage',
+    type=click.Choice(list(SessionStageType.__args__)),
+    default='qualifying',
     show_default=True,
     help="""
-    Определяет, какие предметы будут будут в сессии
-    В "rus" входит - Русский язык, Литература, История, Обществознание
-    В "eng" входит - Английский язык
-    (применим только в алгоритмической сессии)
+    Этап конкурса, который будет участвовать в обмене
     """)
 @click.option(
     '--file-count', '-fc',
@@ -80,15 +71,13 @@ def session():
     show_default=True,
     help="Определяет, какой будет таймаут между доступностью файлов (применим только в алгоритмической сессии)")
 def session_start(
-        session_type: SessionTypeType,
-        dataset: SessionDatasetType,
-        language: SessionLanguageType,
+        contest: SessionContestType,
+        stage: SessionStageType,
         file_count: int,
         file_timeout: int):
     opts = SessionStarterOptions(
-        type=session_type,
-        dataset=dataset,
-        language=language,
+        contest=contest,
+        stage=stage,
         file_count=file_count,
         file_timeout=file_timeout
     )

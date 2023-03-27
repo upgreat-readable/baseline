@@ -6,6 +6,6 @@ FILES_DIR: Final[Path] = ROOT_DIR.joinpath('files')
 LOGS_DIR: Final[Path] = ROOT_DIR.joinpath('logs')
 
 # types
-SessionTypeType: Final = Literal['final', 'algorithmic', 'technical']
-SessionLanguageType: Final = Literal['eng', 'rus']
+SessionContestType: Final = Literal['doctor', 'finder']
+SessionStageType: Final = Literal['qualifying', 'semifinal', 'final']
 SessionDatasetType: Final = Literal['train', 'test']

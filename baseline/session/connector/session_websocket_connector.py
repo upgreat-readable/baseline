@@ -48,11 +48,12 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
                 options.prepare_to_command()
             )
 
+        options = self._session.options
         self.__callback_after_connect = emit_start
 
         await self._platform_connection.connect()
         self._logger.info('Start command init')
-        options = self._session.options
+
         self._logger.debug('Start session options', data=options)
         if self._platform_connection.is_connected() and options:
             self._logger.debug('Baseline was connected and run loop')

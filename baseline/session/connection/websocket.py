@@ -10,11 +10,11 @@ from baseline.session.connection.connection import ConnectionAbstract
 class Websocket(ConnectionAbstract):
     _client: 'socketio.AsyncClient'
 
-    __host: str = 'https://ds.readable.upgreat.one'
+    __host: str = 'https://aimdoc-back.172.16.10.154.nip.io'
     __token: str
     __version: int = 2
 
-    __namespace: Final[str] = '/pku'
+    __namespace: Final[str] = '/baseline'
 
     __client_params = {
         'reconnection': True,
@@ -40,6 +40,9 @@ class Websocket(ConnectionAbstract):
         return self
 
     async def connect(self):
+        logger.debug('self.__namespace')
+        logger.debug(self.__namespace)
+        logger.debug(self.__version)
         await self._client.connect(
             f'{self.__host}?token={self.__token}&version={self.__version}',
             transports=['websocket'],
