@@ -4,6 +4,10 @@ from typing import Optional
 
 @dataclasses.dataclass(frozen=True)
 class SessionFileDto:
-    session_id: Optional[int]
-    file_id: str
-    content: dict
+    session_id: int
+    epicrisis_id: int
+    version_id: int
+    team_id: int
+    task_id: int
+    session_type_code: int
+    awsLink: str

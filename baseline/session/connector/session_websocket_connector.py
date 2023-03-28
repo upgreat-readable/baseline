@@ -137,7 +137,7 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
         self._platform_connection.on('session-client-abort-error', self.__handler_session_abort_error)
 
     def __subscribe_handlers_file(self):
-        self._platform_connection.on('session-file-available', self.__handler_file_available)
+        self._platform_connection.on('session-send-next-file', self.__handler_file_available)
         self._platform_connection.on('session-file-send-success', self.__handler_file_send_success)
         self._platform_connection.on('session-file-send-error', self.__handler_file_send_error)
 
@@ -265,16 +265,20 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
         """
         self._logger.debug('__handler_file_available', data=data)
 
-        if not (data.get('fileId') and data.get('content')):
-            raise ValueError('In available essay absent "fileId" or "content" fields')
+        if not (data.get('sessionId') and data.get('epicrisisId') and data.get('awsLink')):
+            raise ValueError('In available essay absent "epicrisisId" or "sessionId" or "awsLink" fields')
 
         session_file = dto_input.SessionFileDto(
             session_id=data.get('sessionId'),
-            file_id=data.get('fileId'),
-            content=data.get('content')
+            epicrisis_id=data.get('epicrisisId'),
+            version_id=data.get('versionId'),
+            team_id=data.get('teamId'),
+            task_id=data.get('taskId'),
+            session_type_code=data.get('sessionTypeCode'),
+            aws_link=data.get('awsLink'),
         )
         self._logger.info(
-            f'Essay id={session_file.file_id} is available during session id={self._session.id}'
+            f'Essay id={session_file.task_id} is available during session id={self._session.id}'
         )
 
         essay = await self.__create_essay(session_file)
@@ -308,8 +312,8 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
             f'Essay id={send_result_dto.file_id} was not accepted or accepted with an error by Platform during session id={self._session.id}. Message: {send_result_dto.message}'
         )
 
-    async def __create_essay(self, session_file: dto_input.SessionFileDto):
-        self._logger.debug(f'Creation of essay id={session_file.file_id}')
+    async def __create_essay(self, session_file_event_info: dto_input.SessionFileDto):
+        self._logger.debug(f'Get info for ={session_file_event_info.task_id}')
         essay = EssayFactory.get_instance_from_dict(session_file.content)
         await self.__save_essay(essay, 'input')
         self._logger.debug(
