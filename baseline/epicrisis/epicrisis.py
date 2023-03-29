@@ -14,6 +14,8 @@ class EpicrisisAbstract(CopyAbstract, ABC):
 
 
     def __init__(self, data: dto_input.SessionFileDto):
+        self.path_to_xml = f'/sessions/{self.session_id}/{self.epicrisis_id}_{self.version_id}_taskId.xml'
 
-        self.path_to_xml = '/sessions/sessionId/epicrisisId_versionId_taskId.xml'
+class Epicrisis(EpicrisisAbstract):
+
 

@@ -3,9 +3,11 @@ from pathlib import Path
 from typing import NoReturn, Optional, Callable
 import json
 from loguru import logger
-
-from baseline.essay.file import FileFactory
+#
+# from baseline.essay.file import FileFactory
+from baseline.epicrisis.file import FileFactory
 from baseline.essay.essay import EssayAbstract, EssayFactory
+from baseline.epicrisis.epicrisis import EpicrisisAbstract, EssayFactory
 from baseline.tools.constants import SESSION_IS_ONLY_SAVE_FILES
 import baseline.session.session as m_session
 from baseline.session.connection.connection import ConnectionAbstract
@@ -312,6 +314,10 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
             f'Essay id={send_result_dto.file_id} was not accepted or accepted with an error by Platform during session id={self._session.id}. Message: {send_result_dto.message}'
         )
 
+    async def __create_epicrisis(self, session_file_event_info: dto_input.SessionFileDto):
+        self._logger.debug(f'Get info for ={session_file_event_info.task_id}')
+        epicrisis =
+
     async def __create_essay(self, session_file_event_info: dto_input.SessionFileDto):
         self._logger.debug(f'Get info for ={session_file_event_info.task_id}')
         essay = EssayFactory.get_instance_from_dict(session_file.content)
@@ -340,6 +346,12 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
             return marked_essay
 
     async def __save_essay(self, essay: EssayAbstract, dir_name: str):
+        file = FileFactory.create(Path(f'sessions/{self._session.id}/{dir_name}/{essay.meta.id}.json'))
+        essay.file = file
+        essay.save()
+
+
+    async def __save_epicrisis(self, essay: Epicrisis, dir_name: str):
         file = FileFactory.create(Path(f'sessions/{self._session.id}/{dir_name}/{essay.meta.id}.json'))
         essay.file = file
         essay.save()
