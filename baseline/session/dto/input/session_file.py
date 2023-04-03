@@ -9,5 +9,5 @@ class SessionFileDto:
     version_id: int
     team_id: int
     task_id: int
-    session_type_code: int
-    awsLink: str
+    session_type_code: str
+    aws_link: str
