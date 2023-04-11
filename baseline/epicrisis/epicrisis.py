@@ -3,6 +3,7 @@ from baseline.epicrisis.copy_abstract import CopyAbstract
 from baseline.session.dto import input as dto_input
 from baseline.epicrisis.file import FileAbstract, FileFactory
 from baseline.epicrisis.exceptions import NotHasRequiredFieldError, FileIsExistError, ValidationError
+import requests
 
 
 class Epicrisis(CopyAbstract, ABC):
@@ -55,7 +56,8 @@ class Epicrisis(CopyAbstract, ABC):
             if path is None:
                 raise Exception('File is not exist and path not entered')
         else:
-            self._file.write('Its work')
+            response = requests.get('http://aimdoc-back.172.16.10.154.nip.io/ep-content')
+            self._file.write(response.content)
 
 
 class EpicrisisFactory:
