@@ -319,9 +319,10 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
         epicrisis = EpicrisisFactory.get_instance(session_file_event_info)
         await self.__save_epicrisis(epicrisis, 'input')
         self._logger.debug(
-            f'Epicrisis id={session_file_event_info.epicrisis_id} was created and saved to input dir during session id={self._session.id}',
+            f'Epicrisis id={epicrisis.epicrisis_id} was created and saved to input dir during session id={self._session.id}',
             session_id=self._session.id,
-            file_id=epicrisis.epicrisis_id)
+            epicrisis_id=epicrisis.epicrisis_id)
+        return epicrisis
 
     async def __markup_essay(self, essay: EssayAbstract) -> EssayAbstract:
         self._logger.debug(
@@ -344,6 +345,7 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
         file = FileFactory.create(Path(f'sessions/{self._session.id}/{dir_name}/{essay.meta.id}.json'))
         essay.file = file
         essay.save()
+
 
     async def __save_epicrisis(self, epicrisis: Epicrisis, dir_name: str):
         file = FileFactory.create(Path(f'{epicrisis.path_to_xml}'))

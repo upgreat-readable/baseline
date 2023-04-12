@@ -3,6 +3,7 @@ from baseline.epicrisis.copy_abstract import CopyAbstract
 from baseline.session.dto import input as dto_input
 from baseline.epicrisis.file import FileAbstract, FileFactory
 from baseline.epicrisis.exceptions import NotHasRequiredFieldError, FileIsExistError, ValidationError
+import requests
 
 
 class Epicrisis(CopyAbstract, ABC):
@@ -12,8 +13,9 @@ class Epicrisis(CopyAbstract, ABC):
     team_id: int
     task_id: int
     session_type_code: str
-    awsLink: str
+    aws_link: str
     path_to_xml: str
+
     _file: FileAbstract = None
 
     def __init__(self, data: dto_input.SessionFileDto):
@@ -23,8 +25,21 @@ class Epicrisis(CopyAbstract, ABC):
         self.team_id = data.team_id
         self.task_id = data.task_id
         self.session_type_code = data.session_type_code
-        self.awsLink = data.aws_link
-        self.path_to_xml = f'/sessions/{self.session_id}/{self.epicrisis_id}_{self.version_id}_{self.task_id}.xml'
+        self.aws_link = data.aws_link
+        self.path_to_xml = f'sessions/{self.session_id}/{self.epicrisis_id}_{self.version_id}_{self.task_id}.xml'
+
+    def copy(self) -> 'Epicrisis':
+        return self.__class__._copy(self)
+
+    def __copy__(self) -> 'Epicrisis':
+        return self.__class__._copy(self)
+
+    def __deepcopy__(self, memo={}) -> 'Epicrisis':
+        return self.__class__._copy(self)
+
+    @classmethod
+    def _copy(cls, original: 'Epicrisis') -> 'Epicrisis':
+        pass
 
     @property
     def file(self) -> FileAbstract:
@@ -41,28 +56,12 @@ class Epicrisis(CopyAbstract, ABC):
             if path is None:
                 raise Exception('File is not exist and path not entered')
         else:
-            self._file.write('its work!')
-
-    def copy(self) -> 'Epicrisis':
-        return self.__class__._copy(self)
-
-    def __copy__(self) -> 'Epicrisis':
-        return self.__class__._copy(self)
-
-    def __deepcopy__(self, memo={}) -> 'Epicrisis':
-        return self.__class__._copy(self)
-
-    @classmethod
-    def _copy(cls, original: 'Epicrisis') -> 'Epicrisis':
-        pass
+            payload = {'baselineToken': '$2b$05$aCPD9blAId/f3sl13Jmf/eGViczWY3yrWzEKQIdzsWYfGsjorsHKC', 'epicrisisId': self.epicrisis_id}
+            response = requests.get('http://aimdoc-back.192.168.1.95.nip.io/ep-content', params=payload)
+            self._file.write(response.content)
 
 
 class EpicrisisFactory:
     @staticmethod
-    def get_instance(session_file_event_info: dto_input.SessionFileDto) -> Epicrisis:
-        return Epicrisis(session_file_event_info)
-
-
-
-
-
+    def get_instance(data: dto_input.SessionFileDto) -> Epicrisis:
+        return Epicrisis(data)

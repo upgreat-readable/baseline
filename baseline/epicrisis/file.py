@@ -18,7 +18,7 @@ class FileAbstract(ABC):
         pass
 
     @abstractmethod
-    def write(self, content: str) -> None:
+    def write(self, content) -> None:
         pass
 
 
@@ -27,9 +27,9 @@ class File(FileAbstract):
         with open(self._absolute_path) as file:
             return file.read()
 
-    def write(self, content: str) -> None:
+    def write(self, content) -> None:
         self.__check_dir()
-        with open(self._absolute_path, 'w', encoding='utf8') as file:
+        with open(self._absolute_path, 'wb') as file:
             file.write(content)
 
     def __check_dir(self) -> None:
