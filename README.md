@@ -1,19 +1,16 @@
-# Baseline участников конкурса Про//чтение
+# Baseline участников
 
 [Пакет baseline](/docs/baseline.md)
 - [модуль работы с эссе](/docs/epicrisis.md) `baseline.file`;
 - [модуль сессий обмена с платформой](/docs/session.md) `baseline.session`;
-- [модуль разметки эссе](/docs/markup.md) `baseline.markup`;
 - [вспомогательные инструменты](/docs/tools.md) `baseline.tools`
-- [инструмент для работы с саттелитами](/docs/satellite.md) `baseline.satellite`
 
 [Консольный интерфейс](/docs/cli.md) для управления сессиями обмена и оценивания эссе
 
 Зависимости:
   - pipenv, для виртуализации и управления зависимостями
   - Python 3.9
-  - python-socketio["asyncio-client"] версия ~=4.6
-    > важно соблюдать версию пакета, т.к. Nestjs gateway поддерживает только 2 версию протакола socketio, ждем 8й версии nestjs чтобы обновить пакет 
+  - python-socketio["asyncio-client"]
   - aiohttp
   - click
   - loguru
@@ -36,4 +33,3 @@
 
 ### TODO
 - сгенерировать requirements.txt файла на основе Pipfile.lock, обновлять его во время CI
-- обновить пакет python-socketio до 5+ версии, когда платформа будет поддерживать протокол 3-й версии socketio
