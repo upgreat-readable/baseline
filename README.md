@@ -1,7 +1,7 @@
 # Baseline участников конкурса Про//чтение
 
 [Пакет baseline](/docs/baseline.md)
-- [модуль работы с эссе](/docs/essay.md) `baseline.file`;
+- [модуль работы с эссе](/docs/epicrisis.md) `baseline.file`;
 - [модуль сессий обмена с платформой](/docs/session.md) `baseline.session`;
 - [модуль разметки эссе](/docs/markup.md) `baseline.markup`;
 - [вспомогательные инструменты](/docs/tools.md) `baseline.tools`
