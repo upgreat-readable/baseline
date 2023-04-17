@@ -324,6 +324,24 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
             epicrisis_id=epicrisis.epicrisis_id)
         return epicrisis
 
+
+    async def __create_solution(self, epicrisis: Epicrisis):
+        self._logger.debug(
+            f'Task-epicrisis id={epicrisis.task_id} was marked up during session id={self._session.id}',
+        )
+        try:
+            marker = Marker()
+            marked_essay = await marker.markup_async(essay)
+        except Exception as error:
+            # @todo конкретизировать ошибки
+            self._logger.exception(f'Essay id={essay.meta.id} was not marked up. Error: {error}')
+        else:
+            await self.__save_essay(marked_essay, 'output')
+            self._logger.debug(
+                f'Marked up essay id={marked_essay.meta.id} was created and saved to output dir during session id={self._session.id}',
+            )
+            return marked_essay
+
     async def __markup_essay(self, essay: EssayAbstract) -> EssayAbstract:
         self._logger.debug(
             f'Essay id={essay.meta.id} was marked up during session id={self._session.id}',
