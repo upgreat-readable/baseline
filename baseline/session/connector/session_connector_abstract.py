@@ -2,7 +2,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 
 from baseline.session.connection.connection import ConnectionAbstract
-from baseline.essay.essay import EssayAbstract
+from baseline.epicrisis.epicrisis import Epicrisis, EpicrisisFactory
 import baseline.session.session as m_session
 
 
@@ -26,7 +26,7 @@ class SessionConnectorAbstract(ABC):
         pass
 
     @abstractmethod
-    async def send_file(self, essay: EssayAbstract) -> None:
+    async def send_file(self, epicrisis: Epicrisis, answer: str) -> None:
         pass
 
     @abstractmethod

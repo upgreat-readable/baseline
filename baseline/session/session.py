@@ -5,7 +5,7 @@ import baseline.session.connector.session_connector_abstract as connector_abstra
 from baseline.session.connector.session_connector_factory import SessionConnectorFactory
 from baseline.session.dto import SessionStarterOptions
 from baseline.tools.singleton import MetaSingleton
-from baseline.essay.essay import EssayAbstract
+from baseline.epicrisis.epicrisis import Epicrisis, EpicrisisFactory
 
 
 class Session(metaclass=MetaSingleton):
@@ -28,8 +28,8 @@ class Session(metaclass=MetaSingleton):
     async def reconnect(self):
         await self._session_connector.reconnect()
 
-    async def send_file(self, essay: EssayAbstract) -> NoReturn:
-        await self._session_connector.send_file(essay)
+    async def send_file(self, epicrisis: Epicrisis, answer: str) -> NoReturn:
+        await self._session_connector.send_file(epicrisis, answer)
 
     async def get_file(self) -> NoReturn:
         pass

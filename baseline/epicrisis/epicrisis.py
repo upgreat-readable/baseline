@@ -27,7 +27,7 @@ class Epicrisis(CopyAbstract, ABC):
         self.task_id = data.task_id
         self.session_type_code = data.session_type_code
         self.aws_link = data.aws_link
-        self.path_to_xml = f'sessions/{self.session_id}/{self.epicrisis_id}_{self.version_id}_{self.task_id}.xml'
+        self.path_to_xml = f'sessions/{self.session_id}/input/{self.epicrisis_id}_{self.version_id}_{self.task_id}.xml'
 
     def copy(self) -> 'Epicrisis':
         return self.__class__._copy(self)
