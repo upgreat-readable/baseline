@@ -17,7 +17,7 @@ from baseline.session.connector.session_connector_abstract import SessionConnect
 from baseline.session.dto import input as dto_input
 from baseline.session import exception
 
-from baseline.markup import Marker
+from baseline.solution import Marker
 
 
 class SessionWebsocketConnector(SessionConnectorAbstract):
@@ -90,18 +90,18 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
 
         await self._platform_connection.wait()
 
-    async def send_file(self, essay: EssayAbstract) -> None:
-        essay_dict = essay.to_dict()
-        self._logger.debug('Emit session-file-send', data=essay_dict)
+    async def send_file(self, epicrisis: Epicrisis, solution: str) -> None:
+        self._logger.debug('Emit session-file-send', self._platform_connection.is_connected())
         if self._platform_connection.is_connected():
-            self._logger.info(f'Sending essay id={essay.meta.id} during session id={self._session.id}')
+            self._logger.info(f'Sending epicrisis id={epicrisis.epicrisis_id} during session id={self._session.id}')
             await self._platform_connection.emit(
-                'session-file-send',
+                'session-send-file-result',
                 {
                     'sessionId': self._session.id,
-                    'fileId': essay.meta.id,
+                    'epicrisisId': epicrisis.epicrisis_id,
+                    'taskId': epicrisis.task_id,
                     # @todo сделать передачу словаря, а не json-строки
-                    'content': json.dumps(essay_dict)
+                    'answer': solution
                 }
             )
         else:
@@ -285,10 +285,13 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
 
         epicrisis = await self.__create_epicrisis(session_file)
 
-        if not SESSION_IS_ONLY_SAVE_FILES:
-            marked_essay = await self.__markup_essay(epicrisis)
+        self._logger.info(
+            f'SESSION_IS_ONLY_SAVE_FILES id={SESSION_IS_ONLY_SAVE_FILES}'
+        )
 
-            await self.send_file(marked_essay)
+        if not SESSION_IS_ONLY_SAVE_FILES:
+            solution = await self.__create_solution(epicrisis)
+            await self.send_file(epicrisis, solution)
 
     async def __handler_file_send_success(self, data: dict) -> NoReturn:
         self._logger.debug('__handler_file_send_success', data=data)
@@ -324,46 +327,21 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
             epicrisis_id=epicrisis.epicrisis_id)
         return epicrisis
 
-
-    async def __create_solution(self, epicrisis: Epicrisis):
+    async def __create_solution(self, epicrisis: Epicrisis) -> str:
         self._logger.debug(
             f'Task-epicrisis id={epicrisis.task_id} was marked up during session id={self._session.id}',
         )
         try:
             marker = Marker()
-            marked_essay = await marker.markup_async(essay)
+            marked_essay = await marker.markup_async(epicrisis)
         except Exception as error:
             # @todo конкретизировать ошибки
-            self._logger.exception(f'Essay id={essay.meta.id} was not marked up. Error: {error}')
+            self._logger.exception(f'epicrisis id={epicrisis.task_id} was not marked up. Error: {error}')
         else:
-            await self.__save_essay(marked_essay, 'output')
             self._logger.debug(
                 f'Marked up essay id={marked_essay.meta.id} was created and saved to output dir during session id={self._session.id}',
             )
             return marked_essay
-
-    async def __markup_essay(self, essay: EssayAbstract) -> EssayAbstract:
-        self._logger.debug(
-            f'Essay id={essay.meta.id} was marked up during session id={self._session.id}',
-        )
-        try:
-            marker = Marker()
-            marked_essay = await marker.markup_async(essay)
-        except Exception as error:
-            # @todo конкретизировать ошибки
-            self._logger.exception(f'Essay id={essay.meta.id} was not marked up. Error: {error}')
-        else:
-            await self.__save_essay(marked_essay, 'output')
-            self._logger.debug(
-                f'Marked up essay id={marked_essay.meta.id} was created and saved to output dir during session id={self._session.id}',
-            )
-            return marked_essay
-
-    async def __save_essay(self, essay: EssayAbstract, dir_name: str):
-        file = FileFactory.create(Path(f'sessions/{self._session.id}/{dir_name}/{essay.meta.id}.json'))
-        essay.file = file
-        essay.save()
-
 
     async def __save_epicrisis(self, epicrisis: Epicrisis, dir_name: str):
         file = FileFactory.create(Path(f'{epicrisis.path_to_xml}'))

@@ -1,20 +1,19 @@
 from __future__ import annotations
 
 from baseline.epicrisis.epicrisis import Epicrisis
-from baseline.essay.essay import EssayAbstract
-from baseline.markup.implementation.markup_abstract import MarkupAbstract
-from baseline.markup.markup_factory import MarkupFactory
+from baseline.solution.implementation.solution_abstract import SolutionAbstract
+from baseline.solution.solution_factory import SolutionFactory
 from baseline.tools.singleton import MetaSingleton
 
 
 class Marker(metaclass=MetaSingleton):
-    _markup: MarkupAbstract
+    _solution: SolutionAbstract
 
     def __init__(self):
-        self._markup = MarkupFactory().get()
+        self._solution = SolutionFactory().get()
 
-    async def markup_async(self, epicrisis: Epicrisis) -> EssayAbstract:
-        return await self._markup.execute_async(essay=essay)
+    async def markup_async(self, epicrisis: Epicrisis) -> str:
+        return await self._solution.execute_async(epicrisis)
 
-    def markup(self, essay: EssayAbstract) -> EssayAbstract:
-        return self._markup.execute(essay=essay)
+    def markup(self, epicrisis: Epicrisis) -> str:
+        return self._solution.execute(epicrisis)

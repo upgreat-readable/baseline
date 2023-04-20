@@ -1,7 +1,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 
-from baseline.essay.essay import EssayAbstract
+from baseline.epicrisis.epicrisis import Epicrisis
 
 
 class SolutionAbstract(ABC):
@@ -10,9 +10,9 @@ class SolutionAbstract(ABC):
     """
 
     @abstractmethod
-    async def execute_async(self, essay: EssayAbstract) -> EssayAbstract:
+    async def execute_async(self, epicrisis: Epicrisis) -> str:
         pass
 
     @abstractmethod
-    def execute(self, essay: EssayAbstract) -> EssayAbstract:
+    def execute(self, epicrisis: Epicrisis) -> str:
         pass
