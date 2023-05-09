@@ -26,8 +26,8 @@ def asyncio_run(coroutine):
     try:
         loop.run_until_complete(coroutine)
     except asyncio.CancelledError as e:
-        logger.error(f'CancelledError: {e}')
-        logger.opt(exception=True).debug(f'CancelledError: {e}')
+        logger.info(
+            f'Stop (cancel) session.')
     except RuntimeError as e:
         logger.error(f'RuntimeError: {e}')
         logger.opt(exception=True).debug(f'RuntimeError: {e}')
