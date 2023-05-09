@@ -15,12 +15,9 @@ requests = "*"
 colorama = "*"
 win32-setctime = "*"
 pytest = "*"
+python-socketio = {extras = ["asyncio-client"], version = "*"}
 
 [dev-packages]
 
 [requires]
-python_version = "3.9"
-
-[packages.python-socketio]
-extras = [ "asyncio-client",]
-version = "~=5.6"
+python_version = "3.10"

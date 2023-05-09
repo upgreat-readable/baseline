@@ -1,12 +1,11 @@
 from __future__ import annotations
 from pathlib import Path
-from typing import NoReturn, Optional, Callable
+from typing import NoReturn, Optional, Callable, Union
 import json
 from loguru import logger
 #
 # from baseline.essay.file import FileFactory
 from baseline.epicrisis.file import FileFactory
-from baseline.essay.essay import EssayAbstract, EssayFactory
 from baseline.epicrisis.epicrisis import Epicrisis, EpicrisisFactory
 from baseline.tools.constants import SESSION_IS_ONLY_SAVE_FILES
 import baseline.session.session as m_session
@@ -90,7 +89,7 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
 
         await self._platform_connection.wait()
 
-    async def send_file(self, epicrisis: Epicrisis, solution: str) -> None:
+    async def send_file(self, epicrisis: Epicrisis, solution: list[dict[str, Union[int, str]]]) -> None:
         self._logger.debug('Emit session-file-send', self._platform_connection.is_connected())
         if self._platform_connection.is_connected():
             self._logger.info(f'Sending epicrisis id={epicrisis.epicrisis_id} during session id={self._session.id}')
@@ -297,24 +296,23 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
         self._logger.debug('__handler_file_send_success', data=data)
         send_result_dto = dto_input.SessionFileSendDto(
             session_id=data.get('sessionId'),
-            file_id=data.get('fileId'),
+            task_id=data.get('taskId'),
+            epicrisis_id=data.get('epicrisisId'),
             message=data.get('message') or ''
         )
 
         self._logger.success(
-            f'Essay id={send_result_dto.file_id} was accepted by Platform during session id={send_result_dto.session_id}.'
+            f'Task id={send_result_dto.task_id} was accepted by Platform during session id={send_result_dto.session_id}.'
         )
 
     async def __handler_file_send_error(self, data: dict) -> NoReturn:
         self._logger.debug('__handler_file_send_error', data=data)
 
         send_result_dto = dto_input.SessionFileSendDto(
-            session_id=data.get('sessionId'),
-            file_id=data.get('fileId'),
             message=data.get('message') or ''
         )
         self._logger.info(
-            f'Essay id={send_result_dto.file_id} was not accepted or accepted with an error by Platform during session id={self._session.id}. Message: {send_result_dto.message}'
+            f'Task id={send_result_dto.task_id} was not accepted or accepted with an error by Platform during session id={self._session.id}. Message: {send_result_dto.message}'
         )
 
     async def __create_epicrisis(self, session_file_event_info: dto_input.SessionFileDto):
@@ -327,7 +325,7 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
             epicrisis_id=epicrisis.epicrisis_id)
         return epicrisis
 
-    async def __create_solution(self, epicrisis: Epicrisis) -> str:
+    async def __create_solution(self, epicrisis: Epicrisis) -> list[dict[str, Union[int, str]]]:
         self._logger.debug(
             f'Task-epicrisis id={epicrisis.task_id} was marked up during session id={self._session.id}',
         )
@@ -339,7 +337,7 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
             self._logger.exception(f'epicrisis id={epicrisis.task_id} was not marked up. Error: {error}')
         else:
             self._logger.debug(
-                f'Marked up essay id={marked_essay.meta.id} was created and saved to output dir during session id={self._session.id}',
+                f'Marked up essay id={epicrisis.task_id} was created and saved to output dir during session id={self._session.id}',
             )
             return marked_essay
 

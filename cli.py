@@ -1,20 +1,10 @@
-import random
-import subprocess
-
 import click
-import os.path
-from typing import Tuple
-from pathlib import Path
 from loguru import logger
 
 from baseline.tools.constants import SessionContestType, SessionStageType, SessionDatasetType
 from baseline.tools.run import asyncio_run
 from baseline.session.dto import SessionStarterOptions
 from baseline.session.session import Session
-from baseline.essay import EssayFactory, FileFactory
-from baseline.satellite.assistant import Assistant
-from baseline.satellite.archiver import get_essays_list
-from baseline.satellite.archiver import unzip
 
 
 def min_validate(min_value):
@@ -97,24 +87,3 @@ def session_reconnect():
 
 if __name__ == '__main__':
     cli()
-
-# session
-#       start --type --dataset --lang --files_timeout --files_count
-#       abort --continue
-#       reconnect --continue
-#       ##future## - на сервере ещё не реализовано
-#       get_file - получение текущего файла в сессии)
-
-# calculation
-#   psr
-#       --files_id <files_id> [0001 0002] (перечень id файла в папке files/custom)
-#       --files_path <files_path> [/dir/file.json /dir/file2.json] (перечень путей к файлу относительно папки files | --filePath myDir/filepathWithExtension.json)
-#       --dir <dir> files/custom/ (параметр директории, из которой необходимо считывать файлы)
-#       --mode <mode> (режим, в котором запущен ПСР - normal/nomination. по-умолчанию - normal)
-# @todo take FileCollection
-# calculation
-#   criteria
-#       --fileId <fileId> (id файла в папке files/custom) (/^\d+$/);
-#       --filePath <filePath> ('путь к файлу относительно папки files)
-#       --dir <dir> (параметр директории, из которой необходимо считывать файлы) ('files/custom/')
-#       --save <save> (параметр, позволяющий сохранить результаты расчёта критериев в отдельный файл) (false)
