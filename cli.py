@@ -1,7 +1,7 @@
 import click
 from loguru import logger
 
-from baseline.tools.constants import SessionContestType, SessionStageType, SessionDatasetType
+from baseline.tools.constants import SessionContestType, SessionStageType, SessionDatasetType, SessionMainType
 from baseline.tools.run import asyncio_run
 from baseline.session.dto import SessionStarterOptions
 from baseline.session.session import Session
@@ -29,6 +29,13 @@ def session():
 
 
 @session.command('start', help="Use for start a session with params")
+@click.option(
+    '--sessiontype', '-st', 'sessiontype',
+    type=click.Choice(list(SessionMainType.__args__)),
+    default='training',
+    # prompt=True,
+    show_default=True,
+    help="Тип сессии, по умолчанию запускается training")
 @click.option(
     '--contest', '-c', 'contest',
     type=click.Choice(list(SessionContestType.__args__)),
@@ -59,11 +66,13 @@ def session():
     show_default=True,
     help="Определяет, какой будет таймаут между доступностью файлов (применим только в алгоритмической сессии)")
 def session_start(
+        sessiontype: SessionMainType,
         contest: SessionContestType,
         stage: SessionStageType,
         file_count: int,
         file_timeout: int):
     opts = SessionStarterOptions(
+        session_type=sessiontype,
         contest=contest,
         stage=stage,
         file_count=file_count,

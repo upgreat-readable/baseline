@@ -1,10 +1,11 @@
 from pydantic import dataclasses, Field
 
-from baseline.tools.constants import SessionContestType, SessionStageType, SessionDatasetType
+from baseline.tools.constants import SessionContestType, SessionStageType, SessionDatasetType, SessionMainType
 
 
 @dataclasses.dataclass(frozen=True)
 class SessionStarterOptions:
+    session_type: SessionMainType = 'training'
     contest: SessionContestType = 'finder'
 
     stage: SessionStageType = 'rus'
@@ -17,6 +18,7 @@ class SessionStarterOptions:
             'params': {
                 'countFiles': self.file_count,
                 'stage': self.stage,
+                'sessionType': self.session_type,
                 'time': self.file_timeout
             }
         }
