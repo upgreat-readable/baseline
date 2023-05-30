@@ -1,4 +1,5 @@
 from pydantic import dataclasses, Field
+from typing import Optional
 
 from baseline.tools.constants import SessionContestType, SessionStageType, SessionDatasetType, SessionMainType
 
@@ -9,11 +10,11 @@ class SessionStarterOptions:
     contest: SessionContestType = 'finder'
 
     stage: SessionStageType = 'rus'
-    file_count: int = Field(300, ge=10, le=1000)
-    file_timeout: int = Field(60, ge=10, le=60)
+    file_count: Optional[int] = None
+    file_timeout: Optional[int] = None
 
     def prepare_to_command(self) -> dict:
-        return {
+        object_start = {
             'contest': self.contest,
             'params': {
                 'countFiles': self.file_count,
@@ -22,3 +23,11 @@ class SessionStarterOptions:
                 'time': self.file_timeout
             }
         }
+
+        if self.file_count:
+            object_start['params']['countFiles'] = self.file_count
+
+        if self.file_timeout:
+            object_start['params']['time'] = self.file_timeout
+
+        return object_start

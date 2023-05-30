@@ -1,5 +1,6 @@
 import click
 from loguru import logger
+from typing import Optional
 
 from baseline.tools.constants import SessionContestType, SessionStageType, SessionDatasetType, SessionMainType
 from baseline.tools.run import asyncio_run
@@ -9,9 +10,10 @@ from baseline.session.session import Session
 
 def min_validate(min_value):
     def inner_min_validate(ctx, param, value):
-        if value < min_value:
-            raise click.BadParameter(f'{param} минимальное значение {min_value}')
-        return value
+        if value:
+            if value < min_value:
+                raise click.BadParameter(f'{param} минимальное значение {min_value}')
+            return value
 
     return inner_min_validate
 
@@ -54,14 +56,12 @@ def session():
 @click.option(
     '--file-count', '-fc',
     type=int,
-    default=300,
     show_default=True,
     callback=min_validate(10),
     help="Определяет, сколько файлов будет в сессии (применим только в алгоритмической сессии)")
 @click.option(
     '--file-timeout', '-ft',
     type=int,
-    default=60,
     callback=min_validate(10),
     show_default=True,
     help="Определяет, какой будет таймаут между доступностью файлов (применим только в алгоритмической сессии)")
@@ -69,8 +69,8 @@ def session_start(
         sessiontype: SessionMainType,
         contest: SessionContestType,
         stage: SessionStageType,
-        file_count: int,
-        file_timeout: int):
+        file_count: Optional[int],
+        file_timeout: Optional[int]):
     opts = SessionStarterOptions(
         session_type=sessiontype,
         contest=contest,
