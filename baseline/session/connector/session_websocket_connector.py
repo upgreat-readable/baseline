@@ -330,8 +330,8 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
             f'Task-epicrisis id={epicrisis.task_id} was marked up during session id={self._session.id}',
         )
         try:
-            marker = Marker()
-            marked_essay = await marker.markup_async(epicrisis)
+            marker = Marker(epicrisis)
+            marked_essay = await marker.markup_async()
         except Exception as error:
             # @todo конкретизировать ошибки
             self._logger.exception(f'epicrisis id={epicrisis.task_id} was not marked up. Error: {error}')

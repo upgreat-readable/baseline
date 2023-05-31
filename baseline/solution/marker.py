@@ -11,11 +11,11 @@ from baseline.tools.singleton import MetaSingleton
 class Marker(metaclass=MetaSingleton):
     _solution: SolutionAbstract
 
-    def __init__(self):
-        self._solution = SolutionFactory().get()
+    def __init__(self, epicrisis: Epicrisis):
+        self._solution = SolutionFactory(epicrisis).get()
 
-    async def markup_async(self, epicrisis: Epicrisis) -> list[dict[str, Union[int, str]]]:
-        return await self._solution.execute_async(epicrisis)
+    async def markup_async(self) -> list[dict[str, Union[int, str]]]:
+        return await self._solution.execute_async()
 
-    def markup(self, epicrisis: Epicrisis) -> list[dict[str, Union[int, str]]]:
-        return self._solution.execute(epicrisis)
+    def markup(self) -> list[dict[str, Union[int, str]]]:
+        return self._solution.execute()

@@ -6,13 +6,16 @@ from typing import Union
 
 from loguru import logger
 
-from baseline.tools.env_config import DEBUG_MAX_MARKUP_DEMO_DELAY
+from baseline.tools.env_config import DEBUG_MAX_MARKUP_DEMO_DELAY, CHECK_DIRECTORY_ANSWER, CHECK_DIRECTORY_ANSWER_DELAY
 
 from baseline.solution.implementation.solution_abstract import SolutionAbstract
 from baseline.epicrisis.epicrisis import Epicrisis
 
 
 class SolutionDemo(SolutionAbstract):
+    ## Размечаемый эпикриз
+    epicrisis: Epicrisis
+
     xPath: str
     start: int
     end: int
@@ -30,14 +33,17 @@ class SolutionDemo(SolutionAbstract):
         'xPath': ''
     }
 
-    async def execute_async(self, epicrisis: Epicrisis) -> list[dict[str, Union[int, str]]]:
+    def __init__(self, epicrisis: Epicrisis):
+        self.epicrisis = epicrisis
+
+    async def execute_async(self) -> list[dict[str, Union[int, str]]]:
         await asyncio.sleep(random.randrange(0, DEBUG_MAX_MARKUP_DEMO_DELAY + 1))
-        return self.__execute(epicrisis)
+        return self.__execute()
 
-    def execute(self, epicrisis: Epicrisis) -> list[dict[str, Union[int, str]]]:
-        return self.__execute(epicrisis)
+    def execute(self) -> list[dict[str, Union[int, str]]]:
+        return self.__execute()
 
-    def __execute(self, epicrisis: Epicrisis) -> list[dict[str, Union[int, str]]]:
+    def __execute(self) -> list[dict[str, Union[int, str]]]:
         ## make magic with epicrisis
 
         self.__DEMO_SOLUTION = [{

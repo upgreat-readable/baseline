@@ -11,9 +11,9 @@ class SolutionAbstract(ABC):
     """
 
     @abstractmethod
-    async def execute_async(self, epicrisis: Epicrisis) -> list[dict[str, Union[int, str]]]:
+    async def execute_async(self) -> list[dict[str, Union[int, str]]]:
         pass
 
     @abstractmethod
-    def execute(self, epicrisis: Epicrisis) -> list[dict[str, Union[int, str]]]:
+    def execute(self) -> list[dict[str, Union[int, str]]]:
         pass
