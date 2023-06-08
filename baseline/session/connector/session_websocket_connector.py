@@ -3,8 +3,6 @@ from pathlib import Path
 from typing import NoReturn, Optional, Callable, Union
 import json
 from loguru import logger
-#
-# from baseline.essay.file import FileFactory
 from baseline.epicrisis.file import FileFactory
 from baseline.epicrisis.epicrisis import Epicrisis, EpicrisisFactory
 from baseline.tools.constants import SESSION_IS_ONLY_SAVE_FILES
@@ -104,7 +102,7 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
                 }
             )
         else:
-            self._logger.error('An error occured during sending of essay due to connection lost.')
+            self._logger.error('An error occured during sending of epicrisis due to connection lost.')
             raise exceptions.NotConnectedError('WS is not connected')
 
     async def get_file(self) -> None:
@@ -261,13 +259,14 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
 
     async def __handler_file_available(self, data: dict) -> NoReturn:
         """
-        When the platform send available essay in current session
-        :param data: data with essay id and content
+        When the platform send available epicrisis in current session
+        :param data: data with epicrisis id and content
         """
         self._logger.debug('__handler_file_available', data=data)
 
-        if not (data.get('sessionId') and data.get('epicrisisId') and data.get('awsLink')):
-            raise ValueError('In available essay absent "epicrisisId" or "sessionId" or "awsLink" fields')
+        if not (data.get('sessionId') and data.get('epicrisisId') and data.get('awsLink') and data.get('timeoutFile')):
+            raise ValueError('In available epicrisis absent "epicrisisId" '
+                             'or "sessionId" or "awsLink" fields or "timeoutFile"')
 
         session_file = dto_input.SessionFileDto(
             session_id=data.get('sessionId'),
@@ -279,7 +278,7 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
             aws_link=data.get('awsLink'),
         )
         self._logger.info(
-            f'Essay id={session_file.task_id} is available during session id={self._session.id}'
+            f'Epicrisis id={session_file.task_id} is available during session id={self._session.id}'
         )
 
         epicrisis = await self.__create_epicrisis(session_file)
@@ -289,8 +288,10 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
         )
 
         if not SESSION_IS_ONLY_SAVE_FILES:
-            solution = await self.__create_solution(epicrisis)
-            await self.send_file(epicrisis, solution)
+            solution = await self.__create_solution(epicrisis, data.get('timeoutFile'))
+            if solution:
+                self._logger.info(f'Solution find. Try to send this to platform.')
+                await self.send_file(epicrisis, solution)
 
     async def __handler_file_send_success(self, data: dict) -> NoReturn:
         self._logger.debug('__handler_file_send_success', data=data)
@@ -325,21 +326,23 @@ class SessionWebsocketConnector(SessionConnectorAbstract):
             epicrisis_id=epicrisis.epicrisis_id)
         return epicrisis
 
-    async def __create_solution(self, epicrisis: Epicrisis) -> list[dict[str, Union[int, str]]]:
+    async def __create_solution(self, epicrisis: Epicrisis, timeoutFile: int) -> list[dict[str, Union[int, str]]]:
         self._logger.debug(
             f'Task-epicrisis id={epicrisis.task_id} was marked up during session id={self._session.id}',
         )
         try:
             marker = Marker(epicrisis)
-            marked_essay = await marker.markup_async()
+            marked_solution = await marker.markup_async(timeoutFile)
         except Exception as error:
             # @todo конкретизировать ошибки
-            self._logger.exception(f'epicrisis id={epicrisis.task_id} was not marked up. Error: {error}')
+            self._logger.exception(f'Epicrisis id={epicrisis.task_id} was not marked up. Error: {error}')
         else:
-            self._logger.debug(
-                f'Marked up essay id={epicrisis.task_id} was created and saved to output dir during session id={self._session.id}',
-            )
-            return marked_essay
+            if marked_solution:
+                self._logger.info(f'Marked up epicrisis id={epicrisis.task_id} '
+                                  f'was created and saved to output dir during session id={self._session.id}')
+                return marked_solution
+            else:
+                self._logger.info(f'M')
 
     async def __save_epicrisis(self, epicrisis: Epicrisis, dir_name: str):
         file = FileFactory.create(Path(f'{epicrisis.path_to_xml}'))

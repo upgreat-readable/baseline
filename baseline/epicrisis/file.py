@@ -32,6 +32,11 @@ class File(FileAbstract):
         with open(self._absolute_path, 'wb') as file:
             file.write(content)
 
+    def write_dict(self, content) -> None:
+        self.__check_dir()
+        with open(self._absolute_path, 'w') as file:
+            file.write(content)
+
     def __check_dir(self) -> None:
         if not self._absolute_path.parent.exists():
             self._absolute_path.parent.mkdir(mode=0o775, parents=True)

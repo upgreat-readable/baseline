@@ -14,8 +14,8 @@ class Marker(metaclass=MetaSingleton):
     def __init__(self, epicrisis: Epicrisis):
         self._solution = SolutionFactory(epicrisis).get()
 
-    async def markup_async(self) -> list[dict[str, Union[int, str]]]:
-        return await self._solution.execute_async()
+    async def markup_async(self, timeoutFile: int) -> list[dict[str, Union[int, str]]]:
+        return await self._solution.execute_async(timeoutFile)
 
-    def markup(self) -> list[dict[str, Union[int, str]]]:
-        return self._solution.execute()
+    def markup(self, timeoutFile: int) -> list[dict[str, Union[int, str]]]:
+        return self._solution.execute(timeoutFile)

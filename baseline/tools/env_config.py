@@ -17,6 +17,7 @@ CHECK_DIRECTORY_ANSWER: Final[bool] = bool('CHECK_DIRECTORY_ANSWER' in os.enviro
 TOKEN: Final[str] = str('TOKEN' in os.environ and os.environ['TOKEN'])
 DOWNLOAD_HOST: Final[str] = str('DOWNLOAD_HOST' in os.environ and os.environ['DOWNLOAD_HOST'])
 SESSION_IS_ONLY_SAVE_FILES: Final[bool] = bool('SESSION_IS_ONLY_SAVE_FILES' in os.environ and bool(os.environ['SESSION_IS_ONLY_SAVE_FILES']))
+AUTOMATIC_ANSWER_FILE_GENERATE: Final[bool] = bool('AUTOMATIC_ANSWER_FILE_GENERATE' in os.environ and bool(os.environ['AUTOMATIC_ANSWER_FILE_GENERATE']))
 SESSION_WS_PROTOCOL_VERSION: Final[int] = int('SESSION_WS_PROTOCOL_VERSION' in os.environ and os.environ['SESSION_WS_PROTOCOL_VERSION']) or 2
 CHECK_DIRECTORY_ANSWER_DELAY: Final[int] = int('CHECK_DIRECTORY_ANSWER_DELAY' in os.environ and os.environ['CHECK_DIRECTORY_ANSWER_DELAY']) or 0
 
