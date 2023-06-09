@@ -54,7 +54,6 @@ class SolutionDemo(SolutionAbstract):
                           f'{self.epicrisis.epicrisis_id}_{self.epicrisis.version_id}'
                           f'_{self.epicrisis.task_id}.json')
 
-
         if CHECK_DIRECTORY_ANSWER:
             self._logger.info(f'Env- CHECK_DIRECTORY_ANSWER = {CHECK_DIRECTORY_ANSWER} '
                               f'- solution file will be searched in the directory.')
@@ -85,11 +84,6 @@ class SolutionDemo(SolutionAbstract):
                 file.write_dict(json_object)
 
                 self._logger.info(f'Solution file was created in automatic mode.')
-
-                # self._logger.info(f'read start')
-                # file_temp = file.read()
-                # self._logger.info(file_temp)
-                # self._logger.info(f'read end')
                 self._logger.info(os.path.exists(f'files/{directory_conventional_name}'))
 
             delay = (CHECK_DIRECTORY_ANSWER_DELAY if CHECK_DIRECTORY_ANSWER_DELAY <= timeoutFile else timeoutFile)
@@ -99,6 +93,12 @@ class SolutionDemo(SolutionAbstract):
             else:
                 condition = os.path.exists(f'files/{directory_conventional_name}') | (counter == delay)
             self._logger.info(delay)
+
+            if CHECK_DIRECTORY_ANSWER_DELAY:
+                self._logger.info(f'Sleep {CHECK_DIRECTORY_ANSWER_DELAY}.')
+                time.sleep(CHECK_DIRECTORY_ANSWER_DELAY)
+                counter = CHECK_DIRECTORY_ANSWER_DELAY
+
 
             while not condition:
                 self._logger.info(f'while loop')
