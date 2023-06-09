@@ -8,7 +8,7 @@ from baseline.solution.solution_factory import SolutionFactory
 from baseline.tools.singleton import MetaSingleton
 
 
-class Marker(metaclass=MetaSingleton):
+class Marker:
     _solution: SolutionAbstract
 
     def __init__(self, epicrisis: Epicrisis):

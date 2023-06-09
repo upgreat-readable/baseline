@@ -4,7 +4,7 @@ from baseline.tools.singleton import MetaSingleton
 from baseline.epicrisis.epicrisis import Epicrisis
 
 
-class SolutionFactory(metaclass=MetaSingleton):
+class SolutionFactory():
     _solution_implementation: SolutionAbstract
 
     def __init__(self, epicrisis: Epicrisis):

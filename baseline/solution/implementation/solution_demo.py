@@ -49,6 +49,12 @@ class SolutionDemo(SolutionAbstract):
 
     async def execute_async(self, timeoutFile: int) -> list[dict[str, Union[int, str]]]:
         await asyncio.sleep(random.randrange(0, DEBUG_MAX_MARKUP_DEMO_DELAY + 1))
+
+        self._logger.info(f'sessions/{self.epicrisis.session_id}/output/'
+                          f'{self.epicrisis.epicrisis_id}_{self.epicrisis.version_id}'
+                          f'_{self.epicrisis.task_id}.json')
+
+
         if CHECK_DIRECTORY_ANSWER:
             self._logger.info(f'Env- CHECK_DIRECTORY_ANSWER = {CHECK_DIRECTORY_ANSWER} '
                               f'- solution file will be searched in the directory.')
@@ -80,19 +86,31 @@ class SolutionDemo(SolutionAbstract):
 
                 self._logger.info(f'Solution file was created in automatic mode.')
 
+                # self._logger.info(f'read start')
+                # file_temp = file.read()
+                # self._logger.info(file_temp)
+                # self._logger.info(f'read end')
+                self._logger.info(os.path.exists(f'files/{directory_conventional_name}'))
+
             delay = (CHECK_DIRECTORY_ANSWER_DELAY if CHECK_DIRECTORY_ANSWER_DELAY <= timeoutFile else timeoutFile)
             counter = 0
-            while not os.path.exists(f'sessions/{directory_conventional_name}') | (counter == delay):
+            if AUTOMATIC_ANSWER_FILE_GENERATE:
+                condition = (counter == delay)
+            else:
+                condition = os.path.exists(f'files/{directory_conventional_name}') | (counter == delay)
+            self._logger.info(delay)
+
+            while not condition:
                 self._logger.info(f'while loop')
                 time.sleep(1)
                 counter += 1
-                if os.path.isfile(directory_conventional_name):
+                if os.path.isfile(f'files/{directory_conventional_name}'):
                     self._logger.info(
                         f'Solution file found. {self.epicrisis.epicrisis_id}_'
                         f'{self.epicrisis.version_id}'
                         f'_{self.epicrisis.task_id}.json')
 
-                    with open(directory_conventional_name) as f:
+                    with open(f'files/{directory_conventional_name}') as f:
                         data = f.read()
                     solution_from_file = json.loads(data)
                     ## Валидация найденного объекта
