@@ -86,12 +86,8 @@ class SolutionDemo(SolutionAbstract):
                 self._logger.info(f'Solution file was created in automatic mode.')
                 self._logger.info(os.path.exists(f'files/{directory_conventional_name}'))
 
-            delay = (CHECK_DIRECTORY_ANSWER_DELAY if CHECK_DIRECTORY_ANSWER_DELAY <= timeoutFile else timeoutFile)
+            delay = (CHECK_DIRECTORY_ANSWER_DELAY if (CHECK_DIRECTORY_ANSWER_DELAY <= timeoutFile and CHECK_DIRECTORY_ANSWER_DELAY != 0) else timeoutFile)
             counter = 0
-            if AUTOMATIC_ANSWER_FILE_GENERATE:
-                condition = (counter == delay)
-            else:
-                condition = os.path.exists(f'files/{directory_conventional_name}') | (counter == delay)
             self._logger.info(delay)
 
             if CHECK_DIRECTORY_ANSWER_DELAY:
@@ -99,26 +95,48 @@ class SolutionDemo(SolutionAbstract):
                 time.sleep(CHECK_DIRECTORY_ANSWER_DELAY)
                 counter = CHECK_DIRECTORY_ANSWER_DELAY
 
+            if AUTOMATIC_ANSWER_FILE_GENERATE:
+                while not (counter == delay):
+                    self._logger.info(f'while loop')
+                    self._logger.info(f'counter - {counter}')
+                    time.sleep(1)
+                    counter += 1
+                    if os.path.isfile(f'files/{directory_conventional_name}'):
+                        self._logger.info(
+                            f'Solution file found. {self.epicrisis.epicrisis_id}_'
+                            f'{self.epicrisis.version_id}'
+                            f'_{self.epicrisis.task_id}.json')
 
-            while not condition:
-                self._logger.info(f'while loop')
-                time.sleep(1)
-                counter += 1
-                if os.path.isfile(f'files/{directory_conventional_name}'):
-                    self._logger.info(
-                        f'Solution file found. {self.epicrisis.epicrisis_id}_'
-                        f'{self.epicrisis.version_id}'
-                        f'_{self.epicrisis.task_id}.json')
+                        with open(f'files/{directory_conventional_name}') as f:
+                            data = f.read()
+                        solution_from_file = json.loads(data)
+                        ## Валидация найденного объекта
+                        return solution_from_file
+                    else:
+                        continue
+                self._logger.info(f'timer is out, exit')
+                return None
+            else:
+                while not (os.path.exists(f'files/{directory_conventional_name}') or (counter == delay)):
+                    self._logger.info(f'while loop')
+                    self._logger.info(f'counter - {counter}')
+                    time.sleep(1)
+                    counter += 1
+                    if os.path.isfile(f'files/{directory_conventional_name}'):
+                        self._logger.info(
+                            f'Solution file found. {self.epicrisis.epicrisis_id}_'
+                            f'{self.epicrisis.version_id}'
+                            f'_{self.epicrisis.task_id}.json')
 
-                    with open(f'files/{directory_conventional_name}') as f:
-                        data = f.read()
-                    solution_from_file = json.loads(data)
-                    ## Валидация найденного объекта
-                    return solution_from_file
-                else:
-                    continue
-            self._logger.info(f'timer is out, exit')
-            return None
+                        with open(f'files/{directory_conventional_name}') as f:
+                            data = f.read()
+                        solution_from_file = json.loads(data)
+                        ## Валидация найденного объекта
+                        return solution_from_file
+                    else:
+                        continue
+                self._logger.info(f'timer is out, exit')
+                return None
         else:
             self._logger.info(f'Env- CHECK_DIRECTORY_ANSWER = {CHECK_DIRECTORY_ANSWER} '
                               f'- the solution will be taken from the get_solution method.')
@@ -126,6 +144,7 @@ class SolutionDemo(SolutionAbstract):
 
 
     def get_solution(self):
+        ## make magic with epicrisis
         return self.__DEMO_SOLUTION
 
     def execute(self, timeoutFile: int) -> list[dict[str, Union[int, str]]]:
