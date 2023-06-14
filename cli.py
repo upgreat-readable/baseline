@@ -64,7 +64,7 @@ def session():
     type=int,
     callback=min_validate(10),
     show_default=True,
-    help="Определяет, какой будет таймаут между доступностью файлов (применим только в алгоритмической сессии)")
+    help="Определяет, какой будет таймаут между доступностью файлов (применим только в тренировочной сессии)")
 def session_start(
         sessiontype: SessionMainType,
         contest: SessionContestType,
